@@ -1,0 +1,5 @@
+time = 42*60 + 42
+hours = time / 3600
+miles = 10 / 1.61
+speed = miles / hours
+speed
