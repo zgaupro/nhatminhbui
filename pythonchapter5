@@ -1,0 +1,14 @@
+import time
+
+t = time.time()
+
+days = t // (24 * 3600)
+
+seconds_today = t % (24 * 3600)
+
+hours = seconds_today // 3600
+minutes = (seconds_today % 3600) // 60
+seconds = seconds_today % 60
+
+print("Days since epoch:", int(days))
+print("Current time:", int(hours), ":", int(minutes), ":", int(seconds))
