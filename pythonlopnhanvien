@@ -1,0 +1,27 @@
+class NhanVien:
+
+    LUONG_MAX = 50000
+
+    def __init__(self, tenNhanVien, luongCoBan, heSoLuong):
+        self.tenNhanVien = tenNhanVien
+        self.luongCoBan = luongCoBan
+        self.heSoLuong = heSoLuong
+
+    def tinhLuong(self):
+        return self.luongCoBan * self.heSoLuong
+
+    def inTTin(self):
+        print("Tên nhân viên:", self.tenNhanVien)
+        print("Lương cơ bản:", self.luongCoBan)
+        print("Hệ số lương:", self.heSoLuong)
+        print("Lương:", self.tinhLuong())
+
+    def tangLuong(self, delta):
+        luong_moi = self.tinhLuong() + delta
+
+        if luong_moi > NhanVien.LUONG_MAX:
+            print("Lương vượt quá mức tối đa!")
+            return False
+        else:
+            self.luongCoBan += delta
+            return True
