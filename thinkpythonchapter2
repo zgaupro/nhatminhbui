@@ -1,0 +1,33 @@
+import math
+
+# 1. Volume of sphere (r = 5)
+r = 5
+volume = (4/3) * math.pi * r**3
+print("1. Volume of sphere:", volume)
+
+# 2. Wholesale cost of 60 books
+price = 24.95
+discount_price = price * 0.6
+book_cost = 60 * discount_price
+shipping = 3 + (59 * 0.75)
+total_cost = book_cost + shipping
+
+print("2. Total wholesale cost:", total_cost)
+
+# 3. Running time
+start_hour = 6
+start_min = 52
+
+easy = 8*60 + 15
+tempo = 7*60 + 12
+
+total_seconds = easy + (3*tempo) + easy
+
+minutes = total_seconds // 60
+seconds = total_seconds % 60
+
+finish_min = start_min + minutes
+finish_hour = start_hour + finish_min // 60
+finish_min = finish_min % 60
+
+print("3. Breakfast time:", finish_hour, ":", finish_min, ":", seconds)
