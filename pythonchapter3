@@ -1,0 +1,14 @@
+def print_grid():
+    print("+ - - - - + - - - - +")
+    print("|         |         |")
+    print("|         |         |")
+    print("|         |         |")
+    print("|         |         |")
+    print("+ - - - - + - - - - +")
+    print("|         |         |")
+    print("|         |         |")
+    print("|         |         |")
+    print("|         |         |")
+    print("+ - - - - + - - - - +")
+
+print_grid()
