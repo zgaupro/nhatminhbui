@@ -1,0 +1,59 @@
+import copy
+
+class Point:
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+class LineSegment:
+    def __init__(self, d1=None, d2=None):
+        """
+        Kết hợp: Hàm xây dựng mặc định và Hàm xây dựng có đối số (Point, Point)
+        """
+        if d1 is None and d2 is None:
+            # Hàm xây dựng mặc định: tọa độ (8, 5) và (1, 0)
+            self.__d1 = Point(8, 5)
+            self.__d2 = Point(1, 0)
+        else:
+            self.__d1 = d1
+            self.__d2 = d2
+
+    @classmethod
+    def from_coordinates(cls, x1, y1, x2, y2):
+        """Hàm xây dựng với 4 đối số nguyên: (int x1, int y1, int x2, int y2)"""
+        p1 = Point(x1, y1)
+        p2 = Point(x2, y2)
+        return cls(p1, p2)
+
+    @classmethod
+    def from_copy(cls, other_segment):
+        """Hàm xây dựng sao chép (Copy Constructor): Sao chép sâu đối tượng S"""
+        new_d1 = copy.deepcopy(other_segment.get_d1())
+        new_d2 = copy.deepcopy(other_segment.get_d2())
+        return cls(new_d1, new_d2)
+        
+    def get_d1(self):
+        return self.__d1
+    
+    def get_d2(self):
+        return self.__d2
+
+    def display(self):
+        print(f"Đoạn thẳng từ {self.__d1} đến {self.__d2}")
+
+ls_default = LineSegment()
+ls_default.display()
+
+p1 = Point(2, 2)
+p2 = Point(4, 4)
+ls_points = LineSegment(p1, p2)
+ls_points.display()
+
+ls_coords = LineSegment.from_coordinates(10, 20, 30, 40)
+ls_coords.display()
+
+ls_copy = LineSegment.from_copy(ls_coords)
+ls_copy.display()
