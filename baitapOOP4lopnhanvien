@@ -1,0 +1,69 @@
+public class NhanVien {
+    // Các thuộc tính (Fields)
+    private String tenNhanVien;
+    private double luongCoBan;
+    private double heSoLuong;
+    public double LUONG_MAX;
+
+    // Constructor (Hàm khởi tạo)
+    public NhanVien(String tenNhanVien, double luongCoBan, double heSoLuong, double LUONG_MAX) {
+        this.tenNhanVien = tenNhanVien;
+        this.luongCoBan = luongCoBan;
+        this.heSoLuong = heSoLuong;
+        this.LUONG_MAX = LUONG_MAX;
+    }
+
+    // Các phương thức Get và Set
+    public String getTenNhanVien() {
+        return tenNhanVien;
+    }
+
+    public void setTenNhanVien(String tenNhanVien) {
+        this.tenNhanVien = tenNhanVien;
+    }
+
+    public double getLuongCoBan() {
+        return luongCoBan;
+    }
+
+    public void setLuongCoBan(double luongCoBan) {
+        this.luongCoBan = luongCoBan;
+    }
+
+    public double getHeSoLuong() {
+        return heSoLuong;
+    }
+
+    public void setHeSoLuong(double heSoLuong) {
+        this.heSoLuong = heSoLuong;
+    }
+
+    // Phương thức tính lương: Lương = Lương cơ bản * Hệ số lương
+    public double tinhLuong() {
+        return luongCoBan * heSoLuong;
+    }
+
+    // Phương thức tăng lương có kiểm tra điều kiện LUONG_MAX
+    public boolean tangLuong(double heSoTang) {
+        double heSoMoi = this.heSoLuong + heSoTang;
+        double luongMoi = luongCoBan * heSoMoi;
+
+        if (luongMoi > LUONG_MAX) {
+            System.out.println("Thông báo: Việc tăng lương vượt quá Lương tối đa cho phép!");
+            return false;
+        } else {
+            this.heSoLuong = heSoMoi;
+            return true;
+        }
+    }
+
+    // Phương thức hiển thị thông tin đối tượng
+    public void inTTin() {
+        System.out.println("--- Thông tin nhân viên ---");
+        System.out.println("Tên: " + tenNhanVien);
+        System.out.println("Lương cơ bản: " + luongCoBan);
+        System.out.println("Hệ số lương: " + heSoLuong);
+        System.out.println("Lương hiện tại: " + tinhLuong());
+        System.out.println("Lương tối đa cho phép: " + LUONG_MAX);
+    }
+}
