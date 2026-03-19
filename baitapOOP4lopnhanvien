@@ -1,69 +1,61 @@
-public class NhanVien {
-    // Các thuộc tính (Fields)
-    private String tenNhanVien;
-    private double luongCoBan;
-    private double heSoLuong;
-    public double LUONG_MAX;
+class NhanVien:
+    def __init__(self, ten_nhan_vien, luong_co_ban, he_so_luong, luong_max):
+        self._ten_nhan_vien = ten_nhan_vien
+        self._luong_co_ban = luong_co_ban
+        self._he_so_luong = he_so_luong
+        self.LUONG_MAX = luong_max
 
-    // Constructor (Hàm khởi tạo)
-    public NhanVien(String tenNhanVien, double luongCoBan, double heSoLuong, double LUONG_MAX) {
-        this.tenNhanVien = tenNhanVien;
-        this.luongCoBan = luongCoBan;
-        this.heSoLuong = heSoLuong;
-        this.LUONG_MAX = LUONG_MAX;
-    }
+    @property
+    def ten_nhan_vien(self):
+        return self._ten_nhan_vien
 
-    // Các phương thức Get và Set
-    public String getTenNhanVien() {
-        return tenNhanVien;
-    }
+    @ten_nhan_vien.setter
+    def ten_nhan_vien(self, value):
+        self._ten_nhan_vien = value
 
-    public void setTenNhanVien(String tenNhanVien) {
-        this.tenNhanVien = tenNhanVien;
-    }
+    @property
+    def luong_co_ban(self):
+        return self._luong_co_ban
 
-    public double getLuongCoBan() {
-        return luongCoBan;
-    }
+    @luong_co_ban.setter
+    def luong_co_ban(self, value):
+        self._luong_co_ban = value
 
-    public void setLuongCoBan(double luongCoBan) {
-        this.luongCoBan = luongCoBan;
-    }
+    @property
+    def he_so_luong(self):
+        return self._he_so_luong
 
-    public double getHeSoLuong() {
-        return heSoLuong;
-    }
+    @he_so_luong.setter
+    def he_so_luong(self, value):
+        self._he_so_luong = value
 
-    public void setHeSoLuong(double heSoLuong) {
-        this.heSoLuong = heSoLuong;
-    }
+    def tinh_luong(self):
+        return self._luong_co_ban * self._he_so_luong
 
-    // Phương thức tính lương: Lương = Lương cơ bản * Hệ số lương
-    public double tinhLuong() {
-        return luongCoBan * heSoLuong;
-    }
+    def tang_luong(self, he_so_tang):
+        he_so_moi = self._he_so_luong + he_so_tang
+        luong_moi = self._luong_co_ban * he_so_moi
 
-    // Phương thức tăng lương có kiểm tra điều kiện LUONG_MAX
-    public boolean tangLuong(double heSoTang) {
-        double heSoMoi = this.heSoLuong + heSoTang;
-        double luongMoi = luongCoBan * heSoMoi;
+        if luong_moi > self.LUONG_MAX:
+            print(f"Lỗi: Lương mới ({luong_moi}) vượt quá mức tối đa ({self.LUONG_MAX})!")
+            return False
+        else:
+            self._he_so_luong = he_so_moi
+            return True
 
-        if (luongMoi > LUONG_MAX) {
-            System.out.println("Thông báo: Việc tăng lương vượt quá Lương tối đa cho phép!");
-            return false;
-        } else {
-            this.heSoLuong = heSoMoi;
-            return true;
-        }
-    }
+    def in_ttin(self):
+        print("-" * 30)
+        print(f"Tên nhân viên: {self._ten_nhan_vien}")
+        print(f"Lương cơ bản: {self._luong_co_ban}")
+        print(f"Hệ số lương: {self._he_so_luong}")
+        print(f"Tổng lương: {self.tinh_luong()}")
+        print(f"Mức lương tối đa: {self.LUONG_MAX}")
+        print("-" * 30)
 
-    // Phương thức hiển thị thông tin đối tượng
-    public void inTTin() {
-        System.out.println("--- Thông tin nhân viên ---");
-        System.out.println("Tên: " + tenNhanVien);
-        System.out.println("Lương cơ bản: " + luongCoBan);
-        System.out.println("Hệ số lương: " + heSoLuong);
-        System.out.println("Lương hiện tại: " + tinhLuong());
-        System.out.println("Lương tối đa cho phép: " + LUONG_MAX);
-    }
-}
+nv1 = NhanVien("Nguyen Van A", 5000000, 2.0, 15000000)
+nv1.in_ttin()
+
+print(f"Tăng thêm 0.5 hệ số: {nv1.tang_luong(0.5)}")
+nv1.in_ttin()
+
+print(f"Tăng thêm 2.0 hệ số: {nv1.tang_luong(2.0)}")
