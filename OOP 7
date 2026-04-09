@@ -1,0 +1,198 @@
+import json
+import csv
+from abc import ABC, abstractmethod
+
+class TuoiKhongHopLe(Exception): pass
+class BacKhongHopLe(Exception): pass
+
+class CanBo(ABC):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi):
+        self.ho_ten = ho_ten
+        self.tuoi = tuoi
+        self.gioi_tinh = gioi_tinh
+        self.dia_chi = dia_chi
+
+    @property
+    def tuoi(self):
+        return self._tuoi
+
+    @tuoi.setter
+    def tuoi(self, v):
+        if not (18 <= int(v) <= 65):
+            raise TuoiKhongHopLe()
+        self._tuoi = int(v)
+
+    @abstractmethod
+    def loai(self): pass
+
+    def to_dict(self):
+        return {
+            "ho_ten": self.ho_ten,
+            "tuoi": self.tuoi,
+            "gioi_tinh": self.gioi_tinh,
+            "dia_chi": self.dia_chi,
+            "loai": self.loai()
+        }
+
+    @staticmethod
+    def from_dict(d):
+        loai = d["loai"]
+        if loai == "CongNhan":
+            return CongNhan(**d)
+        elif loai == "KySu":
+            return KySu(**d)
+        elif loai == "NhanVien":
+            return NhanVien(**d)
+        else:
+            raise ValueError("Loại không hợp lệ")
+
+    def __str__(self):
+        return f"{self.ho_ten} - {self.tuoi} - {self.loai()}"
+
+class CongNhan(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, bac, **kwargs):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.bac = int(bac)
+
+    def loai(self): return "CongNhan"
+
+    def to_dict(self):
+        d = super().to_dict()
+        d["bac"] = self.bac
+        return d
+
+
+class KySu(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, nganh, **kwargs):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.nganh = nganh
+
+    def loai(self): return "KySu"
+
+    def to_dict(self):
+        d = super().to_dict()
+        d["nganh"] = self.nganh
+        return d
+
+
+class NhanVien(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, cong_viec, **kwargs):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.cong_viec = cong_viec
+
+    def loai(self): return "NhanVien"
+
+    def to_dict(self):
+        d = super().to_dict()
+        d["cong_viec"] = self.cong_viec
+        return d
+
+class QuanLyCanBo:
+    def __init__(self):
+        self.ds = {}  # key = họ tên
+
+    def load_csv(self, filename):
+        try:
+            with open(filename, newline='', encoding="utf-8") as f:
+                reader = csv.DictReader(f)
+                for row in reader:
+                    try:
+                        cb = CanBo.from_dict(row)
+                        self.ds[cb.ho_ten] = cb
+                    except (ValueError, TuoiKhongHopLe):
+                        print("Lỗi dữ liệu:", row)
+        except FileNotFoundError:
+            print("Không tìm thấy file!")
+
+    def save_json(self, filename):
+        with open(filename, "w", encoding="utf-8") as f:
+            json.dump([cb.to_dict() for cb in self.ds.values()],
+                      f, ensure_ascii=False, indent=2)
+
+    def load_json(self, filename):
+        try:
+            with open(filename, encoding="utf-8") as f:
+                data = json.load(f)
+                for d in data:
+                    cb = CanBo.from_dict(d)
+                    self.ds[cb.ho_ten] = cb
+        except FileNotFoundError:
+            pass
+
+    def them(self, cb):
+        self.ds[cb.ho_ten] = cb
+
+    def xoa(self, ten):
+        self.ds.pop(ten, None)
+
+    def tim_ten(self, ten):
+        return [cb for cb in self.ds.values() if ten.lower() in cb.ho_ten.lower()]
+
+    def tim_loai(self, loai):
+        return [cb for cb in self.ds.values() if cb.loai() == loai]
+
+    def top3(self):
+        return sorted(self.ds.values(),
+                      key=lambda x: getattr(x, "bac", 0),
+                      reverse=True)[:3]
+
+    def hien_thi(self):
+        for cb in self.ds.values():
+            print(cb)
+
+    def run(self):
+        self.load_json("canbo.json")
+
+        while True:
+            print("\n1.Thêm  2.Xóa  3.Tìm tên  4.Tìm loại  5.Top3  6.Xem  0.Thoát")
+            chon = input(">> ")
+
+            try:
+                if chon == "1":
+                    loai = input("Loại: ")
+                    ho_ten = input("Tên: ")
+                    tuoi = int(input("Tuổi: "))
+                    gt = input("GT: ")
+                    dc = input("ĐC: ")
+
+                    if loai == "CongNhan":
+                        bac = int(input("Bậc: "))
+                        cb = CongNhan(ho_ten, tuoi, gt, dc, bac)
+                    elif loai == "KySu":
+                        nganh = input("Ngành: ")
+                        cb = KySu(ho_ten, tuoi, gt, dc, nganh)
+                    else:
+                        cv = input("Công việc: ")
+                        cb = NhanVien(ho_ten, tuoi, gt, dc, cv)
+
+                    self.them(cb)
+
+                elif chon == "2":
+                    self.xoa(input("Tên xóa: "))
+
+                elif chon == "3":
+                    for cb in self.tim_ten(input("Tên: ")):
+                        print(cb)
+
+                elif chon == "4":
+                    for cb in self.tim_loai(input("Loại: ")):
+                        print(cb)
+
+                elif chon == "5":
+                    for cb in self.top3():
+                        print(cb)
+
+                elif chon == "6":
+                    self.hien_thi()
+
+                elif chon == "0":
+                    break
+
+                self.save_json("canbo.json")
+
+            except Exception as e:
+                print("Lỗi:", e)
+
+if __name__ == "__main__":
+    ql = QuanLyCanBo()
+    ql.run()
