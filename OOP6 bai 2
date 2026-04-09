@@ -1,0 +1,135 @@
+from abc import ABC, abstractmethod
+
+class TuoiKhongHopLe(Exception):
+    pass
+
+class BacKhongHopLe(Exception):
+    pass
+
+class CanBo(ABC):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi):
+        self.ho_ten = ho_ten
+        self.tuoi = tuoi
+        self.gioi_tinh = gioi_tinh
+        self.dia_chi = dia_chi
+
+    @property
+    def tuoi(self):
+        return self._tuoi
+
+    @tuoi.setter
+    def tuoi(self, value):
+        if value < 18 or value > 65:
+            raise TuoiKhongHopLe("Tuổi phải từ 18 đến 65")
+        self._tuoi = value
+
+    @abstractmethod
+    def mo_ta(self):
+        pass
+
+    def __str__(self):
+        return f"{self.ho_ten} - {self.tuoi} - {self.gioi_tinh} - {self.dia_chi}"
+
+    def __repr__(self):
+        return self.__str__()
+
+    def __eq__(self, other):
+        return isinstance(other, CanBo) and self.ho_ten == other.ho_ten and self.tuoi == other.tuoi
+
+    def __lt__(self, other):
+        return self.ho_ten < other.ho_ten
+
+class CongNhan(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, bac):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.bac = bac
+
+    @property
+    def bac(self):
+        return self._bac
+
+    @bac.setter
+    def bac(self, value):
+        if value < 1 or value > 10:
+            raise BacKhongHopLe("Bậc phải từ 1 đến 10")
+        self._bac = value
+
+    def mo_ta(self):
+        return f"Công nhân - Bậc {self.bac}"
+
+    def __str__(self):
+        return super().__str__() + f" - {self.mo_ta()}"
+
+
+class KySu(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, nganh):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.nganh = nganh
+
+    def mo_ta(self):
+        return f"Kỹ sư - Ngành {self.nganh}"
+
+    def __str__(self):
+        return super().__str__() + f" - {self.mo_ta()}"
+
+
+class NhanVien(CanBo):
+    def __init__(self, ho_ten, tuoi, gioi_tinh, dia_chi, cong_viec):
+        super().__init__(ho_ten, tuoi, gioi_tinh, dia_chi)
+        self.cong_viec = cong_viec
+
+    def mo_ta(self):
+        return f"Nhân viên - Công việc {self.cong_viec}"
+
+    def __str__(self):
+        return super().__str__() + f" - {self.mo_ta()}"
+
+class QuanLyCanBo:
+    def __init__(self):
+        self.ds = []
+
+    def them(self, cb):
+        self.ds.append(cb)
+
+    def tim_kiem(self, ten):
+        return [cb for cb in self.ds if ten.lower() in cb.ho_ten.lower()]
+
+    def hien_thi(self):
+        for cb in self.ds:
+            print(cb)
+
+    def sap_xep(self):
+        self.ds.sort()
+
+    def luu_file(self, filename):
+        with open(filename, "w", encoding="utf-8") as f:
+            for cb in self.ds:
+                f.write(repr(cb) + "\n")
+
+    def doc_file(self, filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            return f.readlines()
+
+if __name__ == "__main__":
+    ql = QuanLyCanBo()
+
+    cb1 = CongNhan("Nguyen Van A", 30, "Nam", "HN", 5)
+    cb2 = KySu("Tran Thi B", 28, "Nu", "HCM", "CNTT")
+    cb3 = NhanVien("Le Van C", 35, "Nam", "DN", "Ke toan")
+
+    ql.them(cb1)
+    ql.them(cb2)
+    ql.them(cb3)
+
+    print("Danh sách:")
+    ql.hien_thi()
+
+    print("\nTìm kiếm 'Van':")
+    for cb in ql.tim_kiem("Van"):
+        print(cb)
+
+    print("\nSắp xếp theo tên:")
+    ql.sap_xep()
+    ql.hien_thi()
+
+    ql.luu_file("canbo.txt")
