@@ -1,0 +1,103 @@
+import math
+
+class MauSoBangKhong(Exception):
+    pass
+
+class PhanSo:
+    def __init__(self, tu, mau):
+        self.tu = tu
+        self.mau = mau
+
+    @property
+    def tu(self):
+        return self._tu
+
+    @tu.setter
+    def tu(self, value):
+        self._tu = value
+
+    @property
+    def mau(self):
+        return self._mau
+
+    @mau.setter
+    def mau(self, value):
+        if value == 0:
+            raise MauSoBangKhong("Mẫu số phải khác 0")
+        self._mau = value
+
+    def toi_gian(self):
+        ucln = math.gcd(self.tu, self.mau)
+        self._tu //= ucln
+        self._mau //= ucln
+        if self._mau < 0:  # chuẩn hóa dấu
+            self._tu *= -1
+            self._mau *= -1
+        return self
+
+    def is_toi_gian(self):
+        return math.gcd(self.tu, self.mau) == 1
+
+    def __add__(self, other):
+        tu = self.tu * other.mau + other.tu * self.mau
+        mau = self.mau * other.mau
+        return PhanSo(tu, mau).toi_gian()
+
+    def __sub__(self, other):
+        tu = self.tu * other.mau - other.tu * self.mau
+        mau = self.mau * other.mau
+        return PhanSo(tu, mau).toi_gian()
+
+    def __mul__(self, other):
+        return PhanSo(self.tu * other.tu, self.mau * other.mau).toi_gian()
+
+    def __truediv__(self, other):
+        return PhanSo(self.tu * other.mau, self.mau * other.tu).toi_gian()
+
+    # ===== So sánh =====
+    def __eq__(self, other):
+        return self.tu * other.mau == other.tu * self.mau
+
+    def __lt__(self, other):
+        return self.tu * other.mau < other.tu * self.mau
+
+    def __gt__(self, other):
+        return self.tu * other.mau > other.tu * self.mau
+
+    # ===== Hash =====
+    def __hash__(self):
+        tg = PhanSo(self.tu, self.mau).toi_gian()
+        return hash((tg.tu, tg.mau))
+
+    # ===== Hiển thị =====
+    def __str__(self):
+        tg = PhanSo(self.tu, self.mau).toi_gian()
+        if tg.mau == 1:
+            return f"{tg.tu}"
+        return f"{tg.tu}/{tg.mau}"
+
+    def __repr__(self):
+        return f"PhanSo({self.tu}, {self.mau})"
+
+if __name__ == "__main__":
+    ds = []
+
+    n = int(input("Nhập số lượng phân số: "))
+    for i in range(n):
+        tu = int(input(f"Tử số {i+1}: "))
+        mau = int(input(f"Mẫu số {i+1}: "))
+        ps = PhanSo(tu, mau)
+        ds.append(ps)
+
+    print("\nDanh sách phân số (tối giản):")
+    for ps in ds:
+        print(ps)
+
+    print("\nSắp xếp tăng dần:")
+    ds_sorted = sorted(ds)
+    for ps in ds_sorted:
+        print(ps)
+
+    print("\nLoại trùng (dùng set):")
+    for ps in set(ds):
+        print(ps)
