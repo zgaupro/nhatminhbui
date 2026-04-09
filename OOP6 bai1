@@ -1,0 +1,107 @@
+from abc import ABC, abstractmethod
+class GiaKhongHopLe(Exception):
+    pass
+
+class MaHangTrungLap(Exception):
+    pass
+
+class HangHoa(ABC):
+    def __init__(self, ma_hang, ten_hang, gia):
+        self._ma_hang = ma_hang
+        self._ten_hang = ten_hang
+        self.gia = gia  # dùng setter
+
+    @property
+    def ma_hang(self):
+        return self._ma_hang
+
+    @property
+    def ten_hang(self):
+        return self._ten_hang
+
+    @property
+    def gia(self):
+        return self._gia
+
+    @gia.setter
+    def gia(self, value):
+        if value <= 0:
+            raise GiaKhongHopLe("Giá phải > 0")
+        self._gia = value
+
+    @abstractmethod
+    def tinh_tien(self):
+        pass
+
+    def __str__(self):
+        return f"{self.ma_hang} - {self.ten_hang} - {self.gia}"
+
+    def __eq__(self, other):
+        return isinstance(other, HangHoa) and self.ma_hang == other.ma_hang
+
+    def __lt__(self, other):
+        return self.gia < other.gia
+
+    def __hash__(self):
+        return hash(self.ma_hang)
+
+class HangDienMay(HangHoa):
+    def tinh_tien(self):
+        return self.gia * 1.1  # ví dụ tính thêm thuế
+
+
+class HangSanhSu(HangHoa):
+    def tinh_tien(self):
+        return self.gia * 1.05
+
+
+class HangThucPham(HangHoa):
+    def tinh_tien(self):
+        return self.gia
+
+class QuanLyHangHoa:
+    def __init__(self):
+        self.ds = []
+
+    def them_hang(self, hang):
+        if hang in self.ds:
+            raise MaHangTrungLap("Mã hàng bị trùng")
+        self.ds.append(hang)
+
+    def hien_thi(self):
+        for h in self.ds:
+            print(h)
+
+    def sap_xep_theo_gia(self):
+        self.ds.sort()
+
+    def luu_file(self, filename):
+        with open(filename, "w", encoding="utf-8") as f:
+            for h in self.ds:
+                f.write(f"{h.ma_hang},{h.ten_hang},{h.gia}\n")
+
+    def doc_file(self, filename):
+        with open(filename, "r", encoding="utf-8") as f:
+            for line in f:
+                ma, ten, gia = line.strip().split(",")
+                self.them_hang(HangThucPham(ma, ten, float(gia)))
+
+if __name__ == "__main__":
+    ql = QuanLyHangHoa()
+
+    h1 = HangDienMay("DM01", "Tivi", 10000)
+    h2 = HangSanhSu("SS01", "Chen", 200)
+    h3 = HangThucPham("TP01", "Gao", 50)
+
+    ql.them_hang(h1)
+    ql.them_hang(h2)
+    ql.them_hang(h3)
+
+    print("Danh sách:")
+    ql.hien_thi()
+
+    print("\nSau khi sắp xếp:")
+    ql.sap_xep_theo_gia()
+    ql.hien_thi()
+
+    ql.luu_file("hanghoa.txt")
